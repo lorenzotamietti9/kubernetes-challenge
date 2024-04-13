@@ -36,9 +36,9 @@ resource "aws_vpc_security_group_ingress_rule" "nodes_security_group_rule_http" 
 resource "aws_vpc_security_group_ingress_rule" "nodes_security_group_rule_ssh" {
   security_group_id = aws_security_group.nodes_security_group.id
   cidr_ipv4         = "93.39.139.61/32"
-  from_port         = 80
-  ip_protocol       = "tcp"
-  to_port           = 80
+  from_port         = 22
+  ip_protocol       = "ssh"
+  to_port           = 22
 }
 
 resource "aws_vpc_security_group_ingress_rule" "nodes_security_group_rule_internal" {
