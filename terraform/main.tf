@@ -1,80 +1,50 @@
-provider "aws" {
-  region = "eu-west-1"
-}
-
-resource "aws_default_vpc" "default" {
-  tags = {
-    Name = "Default VPC"
+terraform {
+  required_providers {
+    virtualbox = {
+      source  = "terra-farm/virtualbox"
+      version = "0.2.2-alpha.1"
+    }
   }
 }
 
-resource "aws_security_group" "nodes_security_group" {
-  name        = "nodes_security_group"
-  description = "security groups for kube nodes"
-  vpc_id      = aws_default_vpc.default.id
-  tags = {
-    Name = "nodes_security_group"
+
+resource "virtualbox_vm" "master" {
+  count     = 1
+  name      = format("master-%02d", count.index + 1)
+  image     = "https://app.vagrantup.com/ubuntu/boxes/bionic64/versions/20180903.0.0/providers/virtualbox.box"
+  cpus      = 2
+  memory    = "2048 mib"
+  user_data = file("${path.module}/user_data")
+
+   network_adapter {
+    type           = "hostonly"
+    device         = "IntelPro1000MTDesktop"
+    host_interface = "VirtualBox Host-Only Ethernet Adapter"
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "nodes_security_group_rule_tls" {
-  security_group_id = aws_security_group.nodes_security_group.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443
-}
+resource "virtualbox_vm" "node" {
+  count     = 2
+  name      = format("worker-%02d", count.index + 1)
+  image     = "https://app.vagrantup.com/ubuntu/boxes/bionic64/versions/20180903.0.0/providers/virtualbox.box"
+  cpus      = 2
+  memory    = "512 mib"
+  user_data = file("${path.module}/user_data")
 
-resource "aws_vpc_security_group_ingress_rule" "nodes_security_group_rule_http" {
-  security_group_id = aws_security_group.nodes_security_group.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 80
-  ip_protocol       = "tcp"
-  to_port           = 80
-}
-
-resource "aws_vpc_security_group_ingress_rule" "nodes_security_group_rule_ssh" {
-  security_group_id = aws_security_group.nodes_security_group.id
-  cidr_ipv4         = "93.39.139.61/32"
-  from_port         = 22
-  ip_protocol       = "ssh"
-  to_port           = 22
-}
-
-resource "aws_vpc_security_group_ingress_rule" "nodes_security_group_rule_internal" {
-  security_group_id = aws_security_group.nodes_security_group.id
-  cidr_ipv4         = aws_default_vpc.default.cidr_block
-  ip_protocol       = -1
-
-}
-
-resource "aws_instance" "node_master" {
-  ami                    = "ami-0eb11ab33f229b26c"
-  instance_type          = "t2.medium"
-  vpc_security_group_ids = [aws_security_group.nodes_security_group.id]
-
-
-  tags = {
-    Name = "NodeMaster"
+  network_adapter {
+    type           = "hostonly"
+    device         = "IntelPro1000MTDesktop"
+    host_interface = "VirtualBox Host-Only Ethernet Adapter"
   }
 }
 
-resource "aws_instance" "node_worker1" {
-  ami                    = "ami-0eb11ab33f229b26c"
-  instance_type          = "t2.medium"
-  vpc_security_group_ids = [aws_security_group.nodes_security_group.id]
-
-  tags = {
-    Name = "NodeWorker1"
-  }
+output "IPAddrmaster" {
+  value = element(virtualbox_vm.master.*.network_adapter.0.ipv4_address, 1)
+}
+output "IPAddr1" {
+  value = element(virtualbox_vm.node.*.network_adapter.0.ipv4_address, 1)
 }
 
-resource "aws_instance" "node_worker2" {
-  ami                    = "ami-0eb11ab33f229b26c"
-  instance_type          = "t2.medium"
-  vpc_security_group_ids = [aws_security_group.nodes_security_group.id]
-
-  tags = {
-    Name = "NodeWorker2"
-  }
+output "IPAddr2" {
+  value = element(virtualbox_vm.node.*.network_adapter.0.ipv4_address, 2)
 }
