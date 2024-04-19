@@ -1,0 +1,69 @@
+# database-chart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: kiratech-test
+  name: {{ .Release.Name }}-postgresql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-postgresql
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: {{ .Values.postgresql.image }}
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.postgresql.postgresUser }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgresql.postgresPassword }}
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresql.postgresDatabase }}
+          ports:
+            - containerPort: 5432
+          #volumeMounts:
+            #- name: postgresql-data
+              #mountPath: /var/lib/postgresql/data
+      #volumes:
+        #- name: postgresql-data
+          #persistentVolumeClaim:
+            #claimName: {{ .Release.Name }}-postgresql-pvc
+---
+
+# database-chart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: kiratech-test
+  name: {{ .Release.Name }}-postgresql-svc
+spec:
+  type: NodePort
+  selector:
+    app: {{ .Release.Name }}-postgresql
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+---
+
+# database-chart/templates/persistence.yaml
+{{- if .Values.postgresql.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: kiratech-test
+  name: {{ .Release.Name }}-postgresql-pvc
+spec:
+  accessModes:
+    - {{ .Values.postgresql.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.postgresql.persistence.size }}
+  storageClassName: {{ .Values.postgresql.persistence.storageClass }}
+{{- end }}

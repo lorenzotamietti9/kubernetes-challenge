@@ -37,3 +37,24 @@ configurazione master:
 configurazione workers:
 
 - utilizzare token staccato dal master per unirsi al cluster
+
+
+
+# kubernetes challenge step 3 : scrittura di un servizio che espone un interfaccia grafica
+
+Per questo step ho creato un piccolo frontend e ho fatto il push in una repo pubblica di docker hub tramite i seguenti passi
+
+- inizializzato una folder denominata frontend
+- scritto un semplice file html
+- scritto un file di configurazione nginx.conf
+- scritto il docker file che parte da un immagine light di nginx in cui copio dentro nelle giuste carelle il file html e il nginx.conf
+- creato una repo privata su docker hub
+- buildato l'immagine e pushata sulla mia repo (lorenzotamietti/frontend)
+- testato il funzionamento localmente tramite docker run
+
+# kubernetes challenge step 4: scrittura helm chart per il deploy del frontend e degli altri servizi
+
+
+
+
+

@@ -1,0 +1,24 @@
+postgresql:
+  image: postgres:latest
+  postgresUser: postgres
+  postgresPassword: password
+  postgresDatabase: postgres
+  persistence:
+      enabled: false
+      storageClass: default
+      accessMode: ReadWriteOnce
+      size: 1Gi
+
+general:
+  namespace: kiratech-test
+
+frontend:
+  port: 80
+  image: lorenzotamietti/frontend:1
+
+keycloak:
+  user: "master"
+  password: "password"
+  url: "jdbc:postgresql://appv1-postgresql-svc.svc.cluster.local:5432/postgres"
+  proxy: "edge"
+  strict: false

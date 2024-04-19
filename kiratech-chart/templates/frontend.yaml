@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.general.namespace}}
+  name: {{ .Release.Name }}-frontend
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-frontend
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-frontend
+        image: {{ .Values.frontend.image }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.frontend.port }}
+        
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: {{ .Values.general.namespace}}
+  name: {{ .Release.Name }}-frontend-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: {{ .Release.Name }}-frontend
+  ports:
+  - port: 80
+    targetPort: 80
