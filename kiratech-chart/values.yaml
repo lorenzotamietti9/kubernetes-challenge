@@ -19,6 +19,6 @@ frontend:
 keycloak:
   user: "master"
   password: "password"
-  url: "jdbc:postgresql://appv1-postgresql-svc.svc.cluster.local:5432/postgres"
+  url: "jdbc:postgresql://{{ .Release.Name }}-postgresql-svc.svc.cluster.local:5432/postgres"
   proxy: "edge"
-  strict: false
+  strict: "false"

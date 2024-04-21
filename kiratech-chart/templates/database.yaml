@@ -42,7 +42,7 @@ metadata:
   namespace: kiratech-test
   name: {{ .Release.Name }}-postgresql-svc
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: {{ .Release.Name }}-postgresql
   ports:
