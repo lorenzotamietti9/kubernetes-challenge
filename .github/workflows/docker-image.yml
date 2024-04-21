@@ -22,6 +22,6 @@ jobs:
         image: lorenzotamietti/frontend
         addLatest: true
         registry: docker.io
-        dockerfile: /frontend
+        dockerfile: frontend/Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
