@@ -52,7 +52,20 @@ Per questo step ho creato un piccolo frontend e ho fatto il push in una repo pub
 - buildato l'immagine e pushata sulla mia repo (lorenzotamietti/frontend)
 - testato il funzionamento localmente tramite docker run
 
-# kubernetes challenge step 4: scrittura helm chart per il deploy del frontend e degli altri servizi
+# kubernetes challenge step 4: setup Helm chart
+
+Per istallare le applicazioni sul cluster ho utilizzato helm, per prima coosa ho istallato il tool sul mio pc, poi ho inizializzato un chart chiamatato kiratech-chart.
+All'interno della folder troviamo:
+
+- frontend.yaml: troviamo l'infrastruttura per il frontend, con un deployment che espone il frontend partendo dall'immagine deployata sulla mia repository di docker hub, e il service di tipo LoadBalancer per esporre il frontend al di fuori del cluster
+- database.yaml: esponde tramite service di tipo ClusterIP, un database postgres configurato con le variabili d'ambiente settate nel file values
+- keycloak.yaml: esponde tramite service di tipo LoadBalancer, una console amministrativa del keycloak come provider di Single sign on e gestione utenti, il deployemt del keycloak è configurato per accedere al database postgres per 
+
+# Continuous integration
+
+Per semplicità, considerando che la mia repository è pubblica su github, ho deciso di utilizzare GitHub action come tool di CI.
+All'interno della folder .github/workflows, troviamo il file docker-image.yaml, che partendo da una action pubblica trovata sul marketplace di github, esegue una build dell' applicazione e fa il push di essa sul mio repository di docker hub.
+Applicando il tag addLatest, e avendo come policy di pull "always" sul deployment del frontend, mi bastera riapplicare l'istallazione del mio chart per avere la nuova versione del frontend up&runningesponde tramite service di tipo ClusterIP
 
 
 
